@@ -30,3 +30,14 @@ And now to build this image, we simply write:
 - Few things to be carefull about:
     - Docker should be working in the backside while trying to build the image.
     - While using the cli, since we use `.` for the path, current directory of the cli should be where our dockerfile located.
+    
+To build this image in a better way, we can give name and a tag like this:
+- `docker build -t myapp:v1.0 .`
+
+To run this docker: `docker run -p 3000:80 -d [image_id]`
+
+## IMPORTANT NOTE
+### Why use `-p 3000:80` ?
+
+    When using the EXPOSE [port_number] in Dockerfile, it is the best practice but not enough actully. Turns out even though we let the image run on a specified port, we still need to let the docker know which port we will be communicating with the container via`-p [host_port_id]:[image/container_port_id]`
+
