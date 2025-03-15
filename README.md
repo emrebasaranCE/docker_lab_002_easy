@@ -41,3 +41,27 @@ To run this docker: `docker run -p 3000:80 -d [image_id]`
 
     When using the EXPOSE [port_number] in Dockerfile, it is the best practice but not enough actully. Turns out even though we let the image run on a specified port, we still need to let the docker know which port we will be communicating with the container via`-p [host_port_id]:[image/container_port_id]`
 
+After any changes done to our app code, we have to build the image from the scratch. To make this step faster, we can change some line in order to use docker's layered approach:
+
+`WORKDIR /app` Cached     
+`COPY . /app` Re-run   
+`RUN npm install` Re-run
+
+When we build our dockerfile after a small change to server.js, this process uses cached data for `WORKDIR /app`. But for `COPY . /app` and `RUN npm install` docker tends to create new layers (re-runs). To improve speed, we can make some changes like this:
+
+`WORKDIR /app`  
+`COPY package.json /app`  
+`RUN npm install`  
+`COPY . /app`  
+
+## How this is better?
+Its based on the idea that docker uses layered approach when creating images. Therefor as long as we dont change any package in package.json, `RUN npm install` will be the same. Now this is works like this:
+
+`WORKDIR /app` Cached  
+`COPY package.json /app` Cached*  
+`RUN npm install` Cached*  
+`COPY . /app` Re-run 
+
+*since we didnt change any packages, both `COPY package.json /app` and `RUN npm install` not effected.
+
+  
